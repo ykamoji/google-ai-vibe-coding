@@ -1,0 +1,8 @@
+allowBuilds:
+  '@google/genai': false
+  '@tailwindcss/oxide': false
+  protobufjs: false
+  re2: false
+  sharp: false
+  unrs-resolver: false
+minimumReleaseAge: 0
