@@ -104,7 +104,7 @@ def evaluate_expense(node_input: Expense | None):
     """Evaluates the expense against the threshold to determine the route."""
     if node_input is None:
         return
-        
+
     if node_input.amount < THRESHOLD:
         return Event(output=node_input, route="auto_approve")
     else:
@@ -117,21 +117,21 @@ def security_checkpoint(node_input: Expense):
     """Scrubs PII and checks for prompt injection."""
     original_description = node_input.description
     new_description = original_description
-    
+
     # Scrub SSN
     if re.search(r'\b\d{3}-\d{2}-\d{4}\b', new_description):
         new_description = re.sub(r'\b\d{3}-\d{2}-\d{4}\b', '[REDACTED SSN]', new_description)
         if "SSN" not in node_input.redacted_categories:
             node_input.redacted_categories.append("SSN")
-            
+
     # Scrub Credit Card (simple heuristic)
     if re.search(r'\b(?:\d[ -]*?){13,16}\b', new_description):
         new_description = re.sub(r'\b(?:\d[ -]*?){13,16}\b', '[REDACTED CREDIT CARD]', new_description)
         if "Credit Card" not in node_input.redacted_categories:
             node_input.redacted_categories.append("Credit Card")
-            
+
     node_input.description = new_description
-    
+
     # Prompt Injection Defense
     injection_pattern = r'(?i)(ignore.*instructions|auto-approve|bypass|override)'
     if re.search(injection_pattern, original_description):
@@ -143,7 +143,7 @@ def security_checkpoint(node_input: Expense):
             "summary": "Security checkpoint blocked this expense due to suspected prompt injection in the description."
         }
         return Event(output=review_output, route="security_flag", state={"expense": node_input.model_dump()})
-        
+
     return Event(output=node_input, route="safe", state={"expense": node_input.model_dump()})
 
 
@@ -176,9 +176,9 @@ async def human_review(ctx: Context, node_input: dict):
     """Pauses for a human to review the LLM's risk assessment and make a final decision."""
     review = ReviewOutput(**node_input)
     expense = Expense(**ctx.state.get("expense", {}))
-    
+
     interrupt_id = "approval_decision"
-    
+
     if not ctx.resume_inputs:
         msg = (
             f"Expense from {expense.submitter} for ${expense.amount}.\n"
@@ -188,17 +188,17 @@ async def human_review(ctx: Context, node_input: dict):
         )
         yield RequestInput(interrupt_id=interrupt_id, message=msg)
         return
-        
+
     decision_text = ctx.resume_inputs.get(interrupt_id, "").strip().lower()
     status = "approved" if decision_text in ["yes", "y", "approve"] else "rejected"
-    
+
     decision = ExpenseDecision(
         status=status,
         reason=f"Human reviewed and {status}.",
         expense=expense,
         llm_review=review
     )
-    
+
     yield Event(content=types.Content(role='model', parts=[types.Part.from_text(text=f"Human review outcome: {status}")]))
     yield Event(output=decision.model_dump())
 

@@ -416,7 +416,7 @@ Use `agents-cli info` to discover the **CLI install path** — this is where the
 | `agents-cli login --status` | Show authentication status |
 
 > [!NOTE]
-> When using an API key to authenticate, the `login` command does not persist them automatically, it just aids in retrieving them and providing instructions on how they can be persisted. 
+> When using an API key to authenticate, the `login` command does not persist them automatically, it just aids in retrieving them and providing instructions on how they can be persisted.
 
 ---
 
@@ -438,4 +438,3 @@ Use `agents-cli info` to discover the **CLI install path** — this is where the
 - `/google-agents-cli-deploy` — Deployment targets, CI/CD pipelines, and production workflows
 - `/google-agents-cli-publish` — Gemini Enterprise registration
 - `/google-agents-cli-observability` — Cloud Trace, logging, BigQuery Analytics, and third-party integrations
-

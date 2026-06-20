@@ -15,14 +15,14 @@ interface Particle {
 export default function Home() {
   const [isSnowing, setIsSnowing] = useState(false);
   const [isBallooning, setIsBallooning] = useState(false);
-  
+
   const handleSnowflakes = () => {
     setIsSnowing(true);
     setTimeout(() => {
       setIsSnowing(false);
     }, 5000);
   };
-  
+
   const handleBalloons = () => {
     setIsBallooning(true);
     setTimeout(() => {
@@ -34,7 +34,7 @@ export default function Home() {
     <main className="min-h-screen bg-[#0A0A0A] text-[#E8E4DF] flex flex-col justify-center relative overflow-hidden font-sans border-2 border-[#2A2A2A]">
       <div className="absolute left-[80px] top-0 bottom-0 w-[1px] bg-[#2A2A2A] hidden md:block" />
       <div className="absolute top-[120px] left-0 right-0 h-[1px] bg-[#2A2A2A] hidden md:block" />
-      <div 
+      <div
         className="absolute left-[26px] top-1/2 -translate-y-1/2 -rotate-180 font-mono text-[10px] uppercase tracking-[4px] opacity-40 hidden md:block whitespace-nowrap"
         style={{ writingMode: 'vertical-rl' }}
       >
@@ -57,16 +57,16 @@ export default function Home() {
         <p className="text-[#E8E4DF] opacity-60 mb-[60px] text-sm font-sans max-w-md">
           Trigger atmospheric effects. The selected sequence will run for 5 seconds.
         </p>
-        
+
         <div className="flex flex-col sm:flex-row gap-10">
-          <button 
+          <button
             onClick={handleSnowflakes}
             disabled={isSnowing || isBallooning}
             className="px-[48px] py-[20px] bg-transparent text-[#E8E4DF] border border-[#4A4A4A] hover:bg-[#E8E4DF] hover:text-[#0A0A0A] hover:border-[#E8E4DF] hover:-translate-y-[2px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] uppercase tracking-[4px] text-[11px] font-mono cursor-pointer"
           >
             Snowflakes
           </button>
-          <button 
+          <button
             onClick={handleBalloons}
             disabled={isSnowing || isBallooning}
             className="px-[48px] py-[20px] bg-transparent text-[#E8E4DF] border border-[#4A4A4A] hover:bg-[#E8E4DF] hover:text-[#0A0A0A] hover:border-[#E8E4DF] hover:-translate-y-[2px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] uppercase tracking-[4px] text-[11px] font-mono cursor-pointer"
@@ -84,7 +84,7 @@ export default function Home() {
       <AnimatePresence>
         {isSnowing && <SnowflakesEffect />}
       </AnimatePresence>
-      
+
       <AnimatePresence>
         {isBallooning && <BalloonsEffect />}
       </AnimatePresence>
@@ -99,7 +99,7 @@ function SnowflakesEffect() {
     const newParticles: Particle[] = Array.from({ length: 70 }).map((_, i) => ({
       id: `snow-${i}`,
       x: Math.random() * 100,
-      delay: Math.random() * 4, 
+      delay: Math.random() * 4,
       duration: 3 + Math.random() * 2,
       sway: (Math.random() - 0.5) * 100,
     }));
@@ -108,9 +108,9 @@ function SnowflakesEffect() {
   }, []);
 
   return (
-    <motion.div 
-      initial={{ opacity: 1 }} 
-      exit={{ opacity: 0 }} 
+    <motion.div
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: 1 }}
       className="absolute inset-0 pointer-events-none"
     >
@@ -118,8 +118,8 @@ function SnowflakesEffect() {
         <motion.div
           key={p.id}
           initial={{ top: '-10%', left: `${p.x}%`, opacity: 0, rotate: 0 }}
-          animate={{ 
-            top: '110%', 
+          animate={{
+            top: '110%',
             opacity: [0, 1, 1, 0],
             rotate: 360,
             x: [0, p.sway, -p.sway, 0]
@@ -156,9 +156,9 @@ function BalloonsEffect() {
   const balloonColors = ['text-[#E8E4DF]', 'text-[#C8C4BF]', 'text-[#A8A49F]', 'text-[#88847F]', 'text-[#68645F]'];
 
   return (
-    <motion.div 
-      initial={{ opacity: 1 }} 
-      exit={{ opacity: 0 }} 
+    <motion.div
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: 1 }}
       className="absolute inset-0 pointer-events-none"
     >
@@ -166,8 +166,8 @@ function BalloonsEffect() {
         <motion.div
           key={p.id}
           initial={{ bottom: '-20%', left: `${p.x}%`, opacity: 0 }}
-          animate={{ 
-            bottom: '120%', 
+          animate={{
+            bottom: '120%',
             opacity: [0, 1, 1, 0],
             x: [0, p.sway, -p.sway, 0]
           }}
@@ -178,11 +178,11 @@ function BalloonsEffect() {
           }}
           className={`absolute ${balloonColors[i % balloonColors.length]}`}
         >
-          <svg 
-            width="40" 
-            height="60" 
-            viewBox="0 0 40 60" 
-            fill="none" 
+          <svg
+            width="40"
+            height="60"
+            viewBox="0 0 40 60"
+            fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className="drop-shadow-md opacity-90"
           >

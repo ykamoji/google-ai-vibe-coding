@@ -17,10 +17,10 @@ This skill helps convert raw JSON data or API responses into structured, strongl
    - `array` -> `List[Type]`
    - `null` -> `Optional[Type]`
    - Nested Objects -> Create a separate sub-class.
-   
+
 3. **Follow the Example**:
    Review `examples/` to see how to structure the output code. notice how nested dictionaries like `preferences` are extracted into their own class.
-   
+
    - Input: `examples/input_data.json`
    - Output: `examples/output_model.py`
 
