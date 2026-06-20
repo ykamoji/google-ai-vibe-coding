@@ -96,5 +96,3 @@ asyncio_default_fixture_loop_scope = "function"
 
 [tool.hatch.build.targets.wheel]
 packages = ["expense_agent","frontend"]
-
-

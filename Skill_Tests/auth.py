@@ -157,7 +157,7 @@ def get_google_auth_url(client_id: str, redirect_uri: str, scopes: list = None) 
     """
     if scopes is None:
         scopes = DEFAULT_SCOPES
-    
+
     params = {
         "client_id": client_id,
         "redirect_uri": redirect_uri,
@@ -176,13 +176,13 @@ def run_local_server(port: int = 8080) -> str:
     """
     server = HTTPServer(('localhost', port), OAuthCallbackHandler)
     server.auth_code = None
-    
+
     print(f"\n[OAuth] Waiting for authentication on http://localhost:{port}...")
-    
+
     # Process requests until we capture the authorization code
     while server.auth_code is None:
         server.handle_request()
-        
+
     return server.auth_code
 
 
@@ -221,36 +221,36 @@ def login(client_id: str = None, client_secret: str = None, port: int = 8080) ->
     # Fallback to environment variables if not passed directly
     client_id = client_id or os.environ.get("GOOGLE_CLIENT_ID")
     client_secret = client_secret or os.environ.get("GOOGLE_CLIENT_SECRET")
-    
+
     if not client_id or not client_secret:
         raise ValueError(
             "Missing Google client ID or client secret. "
             "Please provide them as arguments or set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET env variables."
         )
-        
+
     redirect_uri = f"http://localhost:{port}/"
     auth_url = get_google_auth_url(client_id, redirect_uri)
-    
+
     print(f"\n[OAuth] Opening browser for authentication...")
     print(f"[OAuth] If it doesn't open automatically, please visit: {auth_url}\n")
-    
+
     try:
         webbrowser.open(auth_url)
     except Exception as e:
         print(f"[OAuth] Could not automatically open browser: {e}")
-        
+
     # Start local server to capture the code
     auth_code = run_local_server(port)
     print("[OAuth] Authorization code captured successfully.")
-    
+
     # Exchange code for tokens
     print("[OAuth] Exchanging authorization code for tokens...")
     tokens = exchange_code_for_tokens(client_id, client_secret, auth_code, redirect_uri)
-    
+
     # Retrieve user profile info
     print("[OAuth] Fetching user profile information...")
     user_info = get_user_info(tokens['access_token'])
-    
+
     return {
         "tokens": tokens,
         "user_info": user_info

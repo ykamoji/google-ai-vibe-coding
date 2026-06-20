@@ -20,14 +20,14 @@ class TestGoogleAuth(unittest.TestCase):
         client_id = "test-client-id"
         redirect_uri = "http://localhost:8080/"
         scopes = ["openid", "email"]
-        
+
         url = get_google_auth_url(client_id, redirect_uri, scopes)
         parsed = urllib.parse.urlparse(url)
-        
+
         self.assertEqual(parsed.scheme, "https")
         self.assertEqual(parsed.netloc, "accounts.google.com")
         self.assertEqual(parsed.path, "/o/oauth2/v2/auth")
-        
+
         query = urllib.parse.parse_qs(parsed.query)
         self.assertEqual(query["client_id"][0], client_id)
         self.assertEqual(query["redirect_uri"][0], redirect_uri)
@@ -45,14 +45,14 @@ class TestGoogleAuth(unittest.TestCase):
             "expires_in": 3600
         }
         mock_post.return_value = mock_response
-        
+
         tokens = exchange_code_for_tokens(
             client_id="id",
             client_secret="secret",
             code="auth-code",
             redirect_uri="http://localhost:8080/"
         )
-        
+
         self.assertEqual(tokens["access_token"], "mock-access-token")
         mock_post.assert_called_once()
         args, kwargs = mock_post.call_args
@@ -67,7 +67,7 @@ class TestGoogleAuth(unittest.TestCase):
             "name": "Test User"
         }
         mock_get.return_value = mock_response
-        
+
         info = get_user_info("mock-access-token")
         self.assertEqual(info["email"], "test@example.com")
         mock_get.assert_called_once()
@@ -82,9 +82,9 @@ class TestGoogleAuth(unittest.TestCase):
         mock_run_server.return_value = "code-123"
         mock_exchange.return_value = {"access_token": "token-123"}
         mock_get_user_info.return_value = {"email": "user@example.com", "name": "Vibe Coder"}
-        
+
         res = login(client_id="test_id", client_secret="test_secret")
-        
+
         self.assertEqual(res["user_info"]["name"], "Vibe Coder")
         mock_webbrowser.assert_called_once()
         mock_run_server.assert_called_once()
@@ -97,7 +97,7 @@ class TestGoogleAuth(unittest.TestCase):
     def test_handler_success(self, mock_init):
         mock_server = MagicMock()
         mock_server.auth_code = None
-        
+
         handler = OAuthCallbackHandler()
         handler.server = mock_server
         handler.path = "/?code=captured-auth-code"
@@ -105,9 +105,9 @@ class TestGoogleAuth(unittest.TestCase):
         handler.send_response = MagicMock()
         handler.send_header = MagicMock()
         handler.end_headers = MagicMock()
-        
+
         handler.do_GET()
-        
+
         self.assertEqual(mock_server.auth_code, "captured-auth-code")
         handler.send_response.assert_called_once_with(200)
         handler.send_header.assert_called_once_with('Content-Type', 'text/html')

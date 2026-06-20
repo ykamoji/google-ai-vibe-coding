@@ -40,23 +40,23 @@ export default function Home() {
         const res = await fetch("http://127.0.0.1:8080/apps/expense_agent/users/user/sessions");
         if (!res.ok) return;
         const data = await res.json();
-        
+
         // Find sessions that have a pending approval_decision
         const pending: PendingReview[] = [];
         const allItems: AllExpenseItem[] = [];
-        
+
         const sessionList = Array.isArray(data) ? data : (data.sessions || []);
         for (const session of sessionList) {
           // Fetch full session details to get events
           const detailRes = await fetch(`http://127.0.0.1:8080/apps/expense_agent/users/user/sessions/${session.id}`);
           if (!detailRes.ok) continue;
           const detail = await detailRes.json();
-          
+
           const events = detail.events || [];
           const hasEvents = events.length > 0;
           const latestEvent = hasEvents ? events[events.length - 1] : null;
           const hasPendingReview = latestEvent?.longRunningToolIds?.includes("approval_decision");
-          
+
           let status = "Unknown";
           if (hasPendingReview) {
             status = "Pending Review";
@@ -68,14 +68,14 @@ export default function Home() {
           } else {
             status = "Processed";
           }
-          
+
           allItems.push({
             sessionId: session.id,
             expense: detail.state?.expense || {},
             status: status,
             lastUpdateTime: detail.lastUpdateTime || Date.now()
           });
-          
+
           if (hasPendingReview) {
             // Extract expense and risk context from state
             pending.push({
@@ -87,7 +87,7 @@ export default function Home() {
             });
           }
         }
-        
+
         allItems.sort((a, b) => b.lastUpdateTime - a.lastUpdateTime);
         setAllExpenses(allItems);
         setReviews(pending);
@@ -103,7 +103,7 @@ export default function Home() {
   const triggerExpense = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     const expense = {
       amount: parseFloat(amount),
       submitter,
@@ -111,7 +111,7 @@ export default function Home() {
       description,
       date: new Date().toISOString().split('T')[0]
     };
-    
+
     const payload = {
       message: {
         data: btoa(JSON.stringify(expense)),
@@ -184,32 +184,32 @@ export default function Home() {
           <form className={styles.form} onSubmit={triggerExpense}>
             <div className={styles.inputGroup}>
               <label className={styles.label}>Amount ($)</label>
-              <input 
-                type="number" 
-                className={styles.input} 
-                value={amount} 
-                onChange={e => setAmount(e.target.value)} 
-                required 
+              <input
+                type="number"
+                className={styles.input}
+                value={amount}
+                onChange={e => setAmount(e.target.value)}
+                required
               />
             </div>
             <div className={styles.inputGroup}>
               <label className={styles.label}>Submitter</label>
-              <input 
-                type="email" 
-                className={styles.input} 
-                value={submitter} 
-                onChange={e => setSubmitter(e.target.value)} 
-                required 
+              <input
+                type="email"
+                className={styles.input}
+                value={submitter}
+                onChange={e => setSubmitter(e.target.value)}
+                required
               />
             </div>
             <div className={styles.inputGroup}>
               <label className={styles.label}>Description (Try a prompt injection!)</label>
-              <textarea 
-                className={styles.input} 
-                rows={3} 
-                value={description} 
-                onChange={e => setDescription(e.target.value)} 
-                required 
+              <textarea
+                className={styles.input}
+                rows={3}
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                required
               />
             </div>
             <button type="submit" className={styles.button} disabled={loading}>
@@ -230,7 +230,7 @@ export default function Home() {
               {syncing ? "Syncing..." : "Sync"}
             </button>
           </h2>
-          
+
           <div className={styles.cardList}>
             {reviews.length === 0 ? (
               <div className={styles.emptyState}>
@@ -251,7 +251,7 @@ export default function Home() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className={styles.cardBody}>
                     <div style={{ marginBottom: '0.5rem' }}><strong>Description:</strong> {review.expense.description}</div>
                     <div style={{ marginBottom: '0.5rem', color: 'var(--text-primary)' }}><strong>Agent Summary:</strong> {review.summary}</div>
@@ -261,7 +261,7 @@ export default function Home() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className={styles.cardActions}>
                     <button className={`${styles.button} ${styles.success}`} style={{ flex: 1 }} onClick={() => handleDecision(review.sessionId, "yes")}>
                       Approve
@@ -276,7 +276,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      
+
       {/* Full Width Row: All Expenses History */}
       <div className={styles.panel} style={{ marginTop: "2rem" }}>
         <h2 className={styles.panelTitle}>

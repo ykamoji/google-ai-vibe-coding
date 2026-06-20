@@ -54,7 +54,7 @@ app.description = "API for interacting with the ambient expense agent"
 async def pubsub_handler(request: Request):
     """Accepts Pub/Sub trigger messages and feeds them into the workflow."""
     envelope = await request.json()
-    
+
     if not envelope or "message" not in envelope:
         logger.error("Invalid Pub/Sub payload received.")
         return {"error": "Bad Request: invalid Pub/Sub message format"}
@@ -64,9 +64,9 @@ async def pubsub_handler(request: Request):
     session_id = subscription_path.split("/")[-1] if subscription_path else "default_session"
 
     message = envelope["message"]
-    
+
     logger.info(f"Processing Pub/Sub message for session: {session_id}")
-    
+
     # We pass the envelope's message dictionary as a JSON string to the workflow.
     # The parse_expense node is already equipped to handle {"data": base64_payload}
     # Construct the explicit SQLite URI for the expense_agent app
@@ -77,13 +77,13 @@ async def pubsub_handler(request: Request):
         use_local_storage=True,
     )
     runner = Runner(agent=root_agent, session_service=session_service, app_name="expense_agent")
-    
+
     import json
     content_message = types.Content(
-        role="user", 
+        role="user",
         parts=[types.Part.from_text(text=json.dumps(message))]
     )
-    
+
     try:
         session = await session_service.get_session(
             app_name="expense_agent",
@@ -92,30 +92,30 @@ async def pubsub_handler(request: Request):
         )
         if session is None:
             await session_service.create_session(
-                session_id=session_id, 
+                session_id=session_id,
                 user_id="user",
                 app_name="expense_agent"
             )
     except Exception as e:
         if "NotFound" in str(type(e)):
             await session_service.create_session(
-                session_id=session_id, 
-                user_id="user", 
+                session_id=session_id,
+                user_id="user",
                 app_name="expense_agent"
             )
         else:
             raise
-        
+
     events = runner.run_async(
         new_message=content_message,
         user_id="user",
         session_id=session_id
     )
-    
+
     # Drive the generator to pull all events through the workflow
     async for event in events:
         logger.info(f"Event output: {event}")
-        
+
     return {"status": "success"}
 
 
