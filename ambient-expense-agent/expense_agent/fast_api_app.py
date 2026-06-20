@@ -13,6 +13,11 @@
 # limitations under the License.
 import logging
 import os
+from dotenv import load_dotenv
+
+AGENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Load the environment variables before initializing ADK agents
+load_dotenv(os.path.join(AGENT_DIR, ".env"))
 
 from fastapi import FastAPI, Request
 from google.adk.cli.fast_api import get_fast_api_app
@@ -28,10 +33,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 allow_origins = (
-    os.getenv("ALLOW_ORIGINS", "").split(",") if os.getenv("ALLOW_ORIGINS") else None
+    os.getenv("ALLOW_ORIGINS", "").split(",") if os.getenv("ALLOW_ORIGINS") else ["*"]
 )
 
-AGENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # Create the FastAPI app with ADK utilities
 app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
