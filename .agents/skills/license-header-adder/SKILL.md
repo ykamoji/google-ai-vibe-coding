@@ -11,7 +11,7 @@ This skill ensures that all new source files have the correct copyright header.
 
 1. **Read the Template**:
    First, read the content of the header template file located at `resources/HEADER_TEMPLATE.txt`.
-   
+
    ```python
    # Pseudocode for agent understanding
    template_content = view_file("resources/HEADER_TEMPLATE.txt")

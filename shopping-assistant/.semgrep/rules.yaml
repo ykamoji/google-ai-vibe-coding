@@ -1,0 +1,7 @@
+rules:
+  - id: hardcoded-google-api-key
+    pattern-regex: AIzaSy[A-Za-z0-9_\-]*
+    message: Security Warning - Hardcoded Google API key detected. Do not commit credentials. Use environment variables or a secret manager instead.
+    languages:
+      - python
+    severity: ERROR
